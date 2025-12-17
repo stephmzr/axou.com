@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: typescript-vue-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: typescript_vue_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tagada123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  # Optionnel: pgAdmin pour gérer la base de données
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: typescript-vue-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
